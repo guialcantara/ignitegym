@@ -1,5 +1,6 @@
 import { UserDTO } from "@dtos/UserDTO";
 import { api } from "@services/api";
+import { storageAuthTokenGet, storageAuthTokenRemove, storageAuthTokenSave } from "@storage/storageAuthToken";
 import { storageUserGet, storageUserRemove, storageUserSave } from "@storage/storageUser";
 import { ReactNode, createContext, useEffect, useState } from "react";
 
@@ -20,16 +21,27 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   const [user, setUser] = useState<UserDTO>({} as UserDTO)
   const [isLoadingUserStorageData, setIsLoadingUserStorageData] = useState(true)
 
+  async function userAndTokenUpdate(userData: UserDTO, token: string) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    setUser(userData)
+  }
+
   async function signIn(email: string, password: string) {
     try {
       const { data } = await api.post('/sessions', { email, password })
 
-      if (data) {
-        setUser(data.user)
-        storageUserSave(data.user)
+      if (data && data.token) {
+        setIsLoadingUserStorageData(true)
+
+        await storageUserSave(data.user)
+        await storageAuthTokenSave(data.token)
+
+        userAndTokenUpdate(data.user, data.token)
       }
     } catch (error) {
       throw error
+    } finally {
+      setIsLoadingUserStorageData(false)
     }
   }
 
@@ -39,20 +51,22 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
       setUser({} as UserDTO)
       await storageUserRemove()
-
+      await storageAuthTokenRemove()
     } catch (error) {
       throw error
     } finally {
       setIsLoadingUserStorageData(false)
     }
   }
-  
+
   async function loadUserData() {
     try {
+      setIsLoadingUserStorageData(true)
       const userLogged = await storageUserGet()
-      if (userLogged) {
-        setUser(userLogged)
+      const token = await storageAuthTokenGet()
 
+      if (token && userLogged) {
+        userAndTokenUpdate(userLogged, token)
       }
     } catch (error) {
       throw error
