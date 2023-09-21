@@ -25,7 +25,8 @@ export function Input({ errorMessage = null, isInvalid, ...rest }: Props) {
           bg: 'gray.700',
           borderWidth: 1,
           borderColor: 'green.500'
-        }}
+        }} 
+        
         {...rest}
       />
       <FormControl.ErrorMessage _text={{color: "red.500"}}>

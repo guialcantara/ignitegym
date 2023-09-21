@@ -6,11 +6,13 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@expo-google-fonts/roboto": "^0.2.3",
     "@hookform/resolvers": "^3.3.1",
+    "@react-native-async-storage/async-storage": "1.18.2",
     "@react-navigation/bottom-tabs": "^6.5.8",
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/native-stack": "^6.9.13",
@@ -27,13 +29,13 @@
     "react-native-safe-area-context": "4.6.3",
     "react-native-screens": "~3.22.0",
     "react-native-svg": "13.9.0",
-    "yup": "^1.2.0",
-    "@react-native-async-storage/async-storage": "1.18.2"
+    "yup": "^1.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@types/react": "~18.0.14",
     "babel-plugin-module-resolver": "^5.0.0",
+    "patch-package": "^8.0.0",
     "react-native-svg-transformer": "^1.1.0",
     "typescript": "^5.1.3"
   },
